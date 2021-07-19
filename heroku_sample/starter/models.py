@@ -38,3 +38,4 @@ class Person(db.Model):
       'id': self.id,
       'name': self.name,
       'catchphrase': self.catchphrase}
+
