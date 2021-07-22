@@ -8,6 +8,11 @@ def create_app(test_config=None):
     setup_db(app)
     CORS(app)
 
+    @app.after_request
+    def after_request(response):
+        response.headers.add('Access-Control-Allow-Methods', 'GET,POST,DELETE,PATCH')
+        return response
+
     def check(dt):
         if dt is None:
             return False
