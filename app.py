@@ -36,7 +36,7 @@ def create_app(test_config=None):
             print(e)
             abort(404)
 
-        if check(drinks) is False:
+        if check(actors) is False:
             abort(404)
 
         ds = [ac.get_as_json() for ac in actors]
@@ -66,12 +66,10 @@ def create_app(test_config=None):
 
     @app.route('/actors', methods=['POST'])
     def post_actors():
-        post_json = request.get_json()
-
-        name = post_json.get('name')
-        age = post_json.get('age')
-        gender = post_json.get('gender')
-        description = post_json.get('description')
+        name = request.form.get('name')
+        age = request.form.get('age')
+        gender = request.form.get('gender')
+        description = request.form.get('description')
 
         if ((name is None)
             or (age is None)
