@@ -1,7 +1,7 @@
 import os
 from flask import Flask, request, abort, jsonify
 from flask_cors import CORS
-from models import setup_db
+from models import setup_db, Actor, Movie
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -31,7 +31,7 @@ def create_app(test_config=None):
         actors = None
 
         try:
-            actors = Actors.query.all()
+            actors = Actor.query.all()
         except Exception as e:
             print(e)
             abort(404)
@@ -51,7 +51,7 @@ def create_app(test_config=None):
         actor = None
 
         try:
-            actor = Actors.query.filter_by(id=id).first()
+            actor = Actor.query.filter_by(id=id).first()
         except Exception as e:
             print(e)
             abort(404)
@@ -80,7 +80,7 @@ def create_app(test_config=None):
             abort(422)
 
         try:
-            actor = Actors(
+            actor = Actor(
                 name, age, gender, description=description)
             actor.insert()
 
