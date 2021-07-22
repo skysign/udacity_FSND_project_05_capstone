@@ -47,7 +47,7 @@ def create_app(test_config=None):
         })
 
     @app.route('/actors/<int:id>', methods=['GET'])
-    def get_actor_id(id):
+    def get_actors_by_id(id):
         actor = None
 
         try:
@@ -66,10 +66,11 @@ def create_app(test_config=None):
 
     @app.route('/actors', methods=['POST'])
     def post_actors():
-        name = request.form.get('name')
-        age = request.form.get('age')
-        gender = request.form.get('gender')
-        description = request.form.get('description')
+        post_json = request.get_json()
+        name = post_json.get('name')
+        age = post_json.get('age')
+        gender = post_json.get('gender')
+        description = post_json.get('description')
 
         if ((name is None)
             or (age is None)
@@ -88,10 +89,61 @@ def create_app(test_config=None):
 
         return jsonify({
             'success': True,
-            'actor_id': actor_id
+            'actor_id': actor.id
         })
 
     return app
+
+    @app.route('/actors/<int:id>', methods=['DELETE'])
+    def delete_actors_by_id(id):
+        actor = None
+
+        try:
+            actor = Actor.query.filter_by(id=id).first()
+            actor.delete()
+        except Exception as e:
+            print(e)
+            abort(404)
+
+        if check(actor) is False:
+            abort(404)
+
+        return jsonify({
+            'success': True,
+            'actor': actor.id
+        })
+
+    @app.route('/actors/<int:id>', methods=['PATCH'])
+    def patch_actors_by_id(id):
+        actor = None
+        post_json = request.get_json()
+
+        try:
+            actor = Actor.query.filter_by(id=id).first()
+
+            post_json = request.get_json()
+
+            if post_json.get('name'):
+                name = post_json.get('name')
+            if post_json.get('age'):
+                age = post_json.get('age')
+            if post_json.get('gender'):
+                gender = post_json.get('gender')
+            if post_json.get('description'):
+                description = post_json.get('description')
+
+            actor.update()
+        except Exception as e:
+            print(e)
+            abort(404)
+
+        if check(actor) is False:
+            abort(404)
+
+        return jsonify({
+            'success': True,
+            'actor': actor.id
+        })
 
 application = create_app()
 
