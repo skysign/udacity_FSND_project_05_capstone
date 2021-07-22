@@ -80,7 +80,7 @@ def create_app(test_config=None):
 
         return jsonify({
             'success': True,
-            'actor': actor.id
+            'actor_id': actor.id
         })
 
     @app.route('/actors/<int:id>', methods=['DELETE'])
@@ -99,7 +99,7 @@ def create_app(test_config=None):
 
         return jsonify({
             'success': True,
-            'actor': actor.id
+            'actor_id': id
         })
 
     @app.route('/actors/<int:id>', methods=['GET'])
@@ -163,8 +163,7 @@ def create_app(test_config=None):
             abort(422)
 
         try:
-            movie = Movie(
-                title, released_date, genre, description=description)
+            movie = Movie(title, released_date, genre, description=description)
             movie.insert()
 
         except Exception as e:
@@ -193,7 +192,7 @@ def create_app(test_config=None):
 
         return jsonify({
             'success': True,
-            'actors': ds
+            'movies': ds
         })
 
     @app.route('/movies/<int:id>', methods=['GET'])
@@ -211,7 +210,7 @@ def create_app(test_config=None):
 
         return jsonify({
             'success': True,
-            'actor': movie.get_as_json()
+            'movie': movie.get_as_json()
         })
 
     @app.route('/movies/<int:id>', methods=['DELETE'])
@@ -230,7 +229,7 @@ def create_app(test_config=None):
 
         return jsonify({
             'success': True,
-            'actor': movie.id
+            'movie_id': movie.id
         })
 
     @app.route('/movies/<int:id>', methods=['PATCH'])
@@ -239,7 +238,6 @@ def create_app(test_config=None):
 
         try:
             movie = Movie.query.filter_by(id=id).first()
-
             post_json = request.get_json()
 
             if post_json.get('title'):
@@ -261,7 +259,7 @@ def create_app(test_config=None):
 
         return jsonify({
             'success': True,
-            'movie': movie.id
+            'movie_id': movie.id
         })
 
     return app
