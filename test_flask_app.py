@@ -29,10 +29,17 @@ class AppTestCase(unittest.TestCase):
                            'description': 'actor_json_name age1 gender female'
                          }
 
+        self.new_movie = { 'title': 'movie_title',
+                           'released_date': '2021-07-23',
+                           'genre': 'SF',
+                           'description': 'movie_title 2021-07-23 SF'
+                         }
+
     def tearDown(self):
         """Executed after reach test"""
         pass
 
+    '''/actors test cases'''
     def test_post_actors(self):
         response = self.client().post('/actors', json=self.new_actor)
         data = json.loads(response.data)
@@ -101,87 +108,74 @@ class AppTestCase(unittest.TestCase):
 
         actor.delete()
 
+    '''/movies test cases'''
+    def test_post_movies(self):
+        response = self.client().post('/movies', json=self.new_movie)
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['movie_id'] > 0, True)
 
-    # def test_search_questions(self):
-    #     response = self.client().post('/questions',
-    #                                   json={'searchTerm': 'boxer'})
-    #     data = json.loads(response.data)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(data['success'], True)
-    #     self.assertEqual(len(data['questions']), 1)
-    #     self.assertEqual(data['questions'][0]['id'], 9)
-    #     self.assertEqual(
-    #         data['questions'][0]['question'],
-    #         'What boxer\'s original name is Cassius Clay?')
-    #
-    # def test_post_new_questions(self):
-    #     response = self.client().post('/questions', json=self.new_question)
-    #     data = json.loads(response.data)
-    #
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertTrue(data['created'])
-    #
-    #     question = Question.query.filter_by(id=data['created']).first()
-    #     question.delete()
-    #
-    # def test_delete_question(self):
-    #     # To test 'delete', we insert a question to delete
-    #     question = Question(
-    #         question=self.new_question['question'],
-    #         answer=self.new_question['answer'],
-    #         category=self.new_question['category'],
-    #         difficulty=self.new_question['difficulty'])
-    #     question.insert()
-    #
-    #     response = self.client().delete('/questions/{}'.format(question.id))
-    #     data = json.loads(response.data)
-    #
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(data['success'], True)
-    #     self.assertEqual(data['deleted'], question.id)
-    #
-    # def test_category_questions(self):
-    #     response = self.client().get('/categories/1/questions')
-    #     data = json.loads(response.data)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(data['success'], True)
-    #     self.assertTrue(data['total_questions'])
-    #     self.assertTrue(len(data['questions']))
-    #     self.assertTrue(data['current_category'])
-    #
-    # def test_play_quiz_game(self):
-    #     response = self.client().post('/quizzes',
-    #                                   json={'previous_questions': [2, 6],
-    #                                         'quiz_category': {
-    #                                             'type': 'Entertainment',
-    #                                             'id': '5'}})
-    #     data = json.loads(response.data)
-    #
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(data['success'], True)
-    #     self.assertTrue(data['question'])
-    #     self.assertEqual(data['question']['category'], 5)
-    #     self.assertNotEqual(data['question']['id'], 2)
-    #     self.assertNotEqual(data['question']['id'], 6)
-    #
-    # def test_play_quiz_fails(self):
-    #     response = self.client().post('/quizzes', json={})
-    #
-    #     data = json.loads(response.data)
-    #
-    #     self.assertEqual(response.status_code, 422)
-    #     self.assertEqual(data['success'], False)
-    #     self.assertEqual(data['message'], 'Unprocessable Entity')
-    #
-    # def test_404_request(self):
-    #     # send request with bad page data, load response
-    #     response = self.client().get('/questions?page=10000')
-    #     data = json.loads(response.data)
-    #
-    #     self.assertEqual(response.status_code, 404)
-    #     self.assertEqual(data['success'], False)
-    #     self.assertEqual(data['message'], 'Not Found')
+        # Removed an add actor by test_post_actors()
+        movie = Movie.query.filter_by(id=data['movie_id']).first()
+        movie.delete()
 
+    def test_get_movies(self):
+        response = self.client().get('/movies')
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+
+    def test_get_movies_by_id(self):
+        # Created an movie for testing test_get_movies_by_id()
+        movie = Movie(
+            title=self.new_movie['title'],
+            released_date=self.new_movie['released_date'],
+            genre=self.new_movie['genre'],
+            description=self.new_movie['description'])
+        movie.insert()
+
+        response = self.client().get('/movies/{}'.format(movie.id))
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['movie']['id'], movie.id)
+
+        movie.delete()
+
+    def test_delete_movies_by_id(self):
+        # Created a movie for testing test_delete_actors_by_id()
+        movie = Movie(
+            title=self.new_movie['title'],
+            released_date=self.new_movie['released_date'],
+            genre=self.new_movie['genre'],
+            description=self.new_movie['description'])
+        movie.insert()
+
+        response = self.client().delete('/movies/{}'.format(movie.id))
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['movie_id'], movie.id)
+
+    def test_patch_movies_by_id(self):
+        # Created a movie for testing test_patch_movies_by_id()
+        movie = Movie(
+            title=self.new_movie['title'],
+            released_date=self.new_movie['released_date'],
+            genre=self.new_movie['genre'],
+            description=self.new_movie['description'])
+        movie.insert()
+
+        self.new_movie['description'] = 'patch ' + self.new_movie['description']
+
+        response = self.client().patch('/movies/{}'.format(movie.id), json=self.new_movie)
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['movie_id'], movie.id)
+
+        movie.delete()
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
