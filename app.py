@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, abort, jsonify
 from flask_cors import CORS
 from models import setup_db, Actor, Movie
+from auth import AuthError, requires_auth
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -10,9 +11,7 @@ def create_app(test_config=None):
 
     @app.after_request
     def after_request(response):
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization, true')
         response.headers.add('Access-Control-Allow-Methods', 'GET,POST,DELETE,PATCH')
-        # print('after_request')
         return response
 
     def check(dt):
@@ -25,16 +24,22 @@ def create_app(test_config=None):
     def get_greeting():
         excited = os.getenv('EXCITED', default=None)
         greeting = "Hello"
+
         if excited == 'true':
             greeting = greeting + "!!!!!"
+
         return greeting
 
+    # GET /coolkids
+    # Used as a debugging purpose to print jwt, to check right permission are assigned from auth0.com
     @app.route('/coolkids')
-    def be_cool():
-        return "Be cool, man, be coooool! You're almost a FSND grad!"
+    @requires_auth('')
+    def be_cool(payload, *args, **kwargs):
+        return 'Be cool, man, be coooool! You\'re almost a FSND grad! ' + str(payload)
 
     @app.route('/actors', methods=['GET'])
-    def get_actors():
+    @requires_auth('get:actors')
+    def get_actors(payload, *args, **kwargs):
         actors = None
 
         try:
@@ -54,7 +59,9 @@ def create_app(test_config=None):
         })
 
     @app.route('/actors/<int:id>', methods=['PATCH'])
-    def patch_actors_by_id(id):
+    @requires_auth('patch:actors_id')
+    def patch_actors_by_id(payload, *args, **kwargs):
+        id = kwargs['id']
         actor = None
 
         try:
@@ -84,7 +91,9 @@ def create_app(test_config=None):
         })
 
     @app.route('/actors/<int:id>', methods=['DELETE'])
-    def delete_actors_by_id(id):
+    @requires_auth('delete:actors_id')
+    def delete_actors_by_id(payload, *args, **kwargs):
+        id = kwargs['id']
         actor = None
 
         try:
@@ -103,7 +112,9 @@ def create_app(test_config=None):
         })
 
     @app.route('/actors/<int:id>', methods=['GET'])
-    def get_actors_by_id(id):
+    @requires_auth('get:actors_id')
+    def get_actors_by_id(payload, *args, **kwargs):
+        id = kwargs['id']
         actor = None
 
         try:
@@ -121,7 +132,8 @@ def create_app(test_config=None):
         })
 
     @app.route('/actors', methods=['POST'])
-    def post_actors():
+    @requires_auth('post:actors')
+    def post_actors(payload, *args, **kwargs):
         post_json = request.get_json()
         name = post_json.get('name')
         age = post_json.get('age')
@@ -149,7 +161,8 @@ def create_app(test_config=None):
         })
 
     @app.route('/movies', methods=['POST'])
-    def post_movies():
+    @requires_auth('post:movies')
+    def post_movies(payload, *args, **kwargs):
         post_json = request.get_json()
         title = post_json.get('title')
         released_date = post_json.get('released_date')
@@ -176,7 +189,8 @@ def create_app(test_config=None):
         })
 
     @app.route('/movies', methods=['GET'])
-    def get_movies():
+    @requires_auth('get:movies')
+    def get_movies(payload, *args, **kwargs):
         movies = None
 
         try:
@@ -196,7 +210,9 @@ def create_app(test_config=None):
         })
 
     @app.route('/movies/<int:id>', methods=['GET'])
-    def get_movies_by_id(id):
+    @requires_auth('get:movies_id')
+    def get_movies_by_id(payload, *args, **kwargs):
+        id = kwargs['id']
         movie = None
 
         try:
@@ -214,7 +230,9 @@ def create_app(test_config=None):
         })
 
     @app.route('/movies/<int:id>', methods=['DELETE'])
-    def delete_movies_by_id(id):
+    @requires_auth('delete:movies_id')
+    def delete_movies_by_id(payload, *args, **kwargs):
+        id = kwargs['id']
         movie = None
 
         try:
@@ -233,7 +251,9 @@ def create_app(test_config=None):
         })
 
     @app.route('/movies/<int:id>', methods=['PATCH'])
-    def patch_movies_by_id(id):
+    @requires_auth('patch:movies_id')
+    def patch_movies_by_id(payload, *args, **kwargs):
+        id = kwargs['id']
         movie = None
 
         try:

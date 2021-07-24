@@ -16,6 +16,10 @@ class AppTestCase(unittest.TestCase):
         self.database_path = os.environ['DATABASE_URL']
         setup_db(self.app, self.database_path)
 
+        self.token_CA = os.environ['token_CA']
+        self.token_CD = os.environ['token_CA']
+        self.token_EP = os.environ['token_CA']
+
         # binds the app to the current context
         with self.app.app_context():
             self.db = SQLAlchemy()
@@ -39,11 +43,22 @@ class AppTestCase(unittest.TestCase):
         """Executed after reach test"""
         pass
 
-    '''/actors test cases'''
+    '''/actors test cases '''
     def test_post_actors(self):
         response = self.client().post('/actors', json=self.new_actor)
-        data = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['actor_id'] > 0, True)
+
+        # Removed an add actor by test_post_actors()
+        actor = Actor.query.filter_by(id=data['actor_id']).first()
+        actor.delete()
+
+    def test_post_actors_with_token(self):
+        response = self.client().post('/actors', json=self.new_actor)
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['actor_id'] > 0, True)
 
@@ -53,8 +68,8 @@ class AppTestCase(unittest.TestCase):
 
     def test_get_actors(self):
         response = self.client().get('/actors')
-        data = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
         self.assertEqual(data['success'], True)
 
     def test_get_actors_by_id(self):
@@ -67,8 +82,8 @@ class AppTestCase(unittest.TestCase):
         actor.insert()
 
         response = self.client().get('/actors/{}'.format(actor.id))
-        data = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['actor']['id'], actor.id)
 
@@ -84,8 +99,8 @@ class AppTestCase(unittest.TestCase):
         actor.insert()
 
         response = self.client().delete('/actors/{}'.format(actor.id))
-        data = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['actor_id'] > 0, True)
 
@@ -101,8 +116,8 @@ class AppTestCase(unittest.TestCase):
         self.new_actor['description'] = 'patch ' + self.new_actor['description']
 
         response = self.client().patch('/actors/{}'.format(actor.id), json=self.new_actor)
-        data = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['actor_id'] > 0, True)
 
@@ -111,8 +126,8 @@ class AppTestCase(unittest.TestCase):
     '''/movies test cases'''
     def test_post_movies(self):
         response = self.client().post('/movies', json=self.new_movie)
-        data = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['movie_id'] > 0, True)
 
@@ -122,8 +137,8 @@ class AppTestCase(unittest.TestCase):
 
     def test_get_movies(self):
         response = self.client().get('/movies')
-        data = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
         self.assertEqual(data['success'], True)
 
     def test_get_movies_by_id(self):
@@ -136,8 +151,8 @@ class AppTestCase(unittest.TestCase):
         movie.insert()
 
         response = self.client().get('/movies/{}'.format(movie.id))
-        data = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['movie']['id'], movie.id)
 
@@ -153,8 +168,8 @@ class AppTestCase(unittest.TestCase):
         movie.insert()
 
         response = self.client().delete('/movies/{}'.format(movie.id))
-        data = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['movie_id'], movie.id)
 
@@ -170,8 +185,8 @@ class AppTestCase(unittest.TestCase):
         self.new_movie['description'] = 'patch ' + self.new_movie['description']
 
         response = self.client().patch('/movies/{}'.format(movie.id), json=self.new_movie)
-        data = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['movie_id'], movie.id)
 
