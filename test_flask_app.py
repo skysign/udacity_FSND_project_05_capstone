@@ -17,8 +17,8 @@ class AppTestCase(unittest.TestCase):
         setup_db(self.app, self.database_path)
 
         self.token_CA = os.environ['token_CA']
-        self.token_CD = os.environ['token_CA']
-        self.token_EP = os.environ['token_CA']
+        self.token_CD = os.environ['token_CD']
+        self.token_EP = os.environ['token_EP']
 
         # binds the app to the current context
         with self.app.app_context():
@@ -43,37 +43,40 @@ class AppTestCase(unittest.TestCase):
         """Executed after reach test"""
         pass
 
-    '''/actors test cases '''
+    # /actors test cases
     def test_post_actors(self):
         response = self.client().post('/actors', json=self.new_actor)
-        self.assertEqual(response.status_code, 200)
-        data = json.loads(response.data)
-        self.assertEqual(data['success'], True)
-        self.assertEqual(data['actor_id'] > 0, True)
-
-        # Removed an add actor by test_post_actors()
-        actor = Actor.query.filter_by(id=data['actor_id']).first()
-        actor.delete()
+        self.assertEqual(response.status_code, 401)
 
     def test_post_actors_with_token(self):
-        response = self.client().post('/actors', json=self.new_actor)
+        response = self.client().post(
+            '/actors',
+            json=self.new_actor,
+            headers={'Authorization': "Bearer {}".format(self.token_CD)
+        })
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['actor_id'] > 0, True)
 
-        # Removed an add actor by test_post_actors()
+        # Removed an add actor for testing
         actor = Actor.query.filter_by(id=data['actor_id']).first()
         actor.delete()
 
     def test_get_actors(self):
         response = self.client().get('/actors')
+        self.assertEqual(response.status_code, 401)
+
+    def test_get_actors_with_token(self):
+        response = self.client().get('/actors', headers={
+            'Authorization': "Bearer {}".format(self.token_CA)
+        })
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(data['success'], True)
 
     def test_get_actors_by_id(self):
-        # Created an actor for testing test_delete_actors_by_id()
+        # Created an actor for testing
         actor = Actor(
             name=self.new_actor['name'],
             age=self.new_actor['age'],
@@ -82,6 +85,23 @@ class AppTestCase(unittest.TestCase):
         actor.insert()
 
         response = self.client().get('/actors/{}'.format(actor.id))
+        self.assertEqual(response.status_code, 401)
+
+        actor.delete()
+
+    def test_get_actors_by_id_with_token(self):
+        # Created an actor for testing
+        actor = Actor(
+            name=self.new_actor['name'],
+            age=self.new_actor['age'],
+            gender=self.new_actor['gender'],
+            description=self.new_actor['description'])
+        actor.insert()
+
+        response = self.client().get(
+            '/actors/{}'.format(actor.id),
+            headers={'Authorization': "Bearer {}".format(self.token_CA)}
+        )
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(data['success'], True)
@@ -90,7 +110,7 @@ class AppTestCase(unittest.TestCase):
         actor.delete()
 
     def test_delete_actors_by_id(self):
-        # Created an actor for testing test_delete_actors_by_id()
+        # Created an actor for testing
         actor = Actor(
             name=self.new_actor['name'],
             age=self.new_actor['age'],
@@ -99,13 +119,30 @@ class AppTestCase(unittest.TestCase):
         actor.insert()
 
         response = self.client().delete('/actors/{}'.format(actor.id))
+        self.assertEqual(response.status_code, 401)
+
+        actor.delete()
+
+    def test_delete_actors_by_id_with_token(self):
+        # Created an actor for testing
+        actor = Actor(
+            name=self.new_actor['name'],
+            age=self.new_actor['age'],
+            gender=self.new_actor['gender'],
+            description=self.new_actor['description'])
+        actor.insert()
+
+        response = self.client().delete(
+            '/actors/{}'.format(actor.id),
+            headers={'Authorization': "Bearer {}".format(self.token_EP)}
+        )
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['actor_id'] > 0, True)
 
     def test_patch_actors_by_id(self):
-        # Created an actor for testing test_patch_actors_by_id()
+        # Created an actor for testing
         actor = Actor(
             name=self.new_actor['name'],
             age=self.new_actor['age'],
@@ -116,6 +153,26 @@ class AppTestCase(unittest.TestCase):
         self.new_actor['description'] = 'patch ' + self.new_actor['description']
 
         response = self.client().patch('/actors/{}'.format(actor.id), json=self.new_actor)
+        self.assertEqual(response.status_code, 401)
+
+        actor.delete()
+
+    def test_patch_actors_by_id_with_token(self):
+        # Created an actor for testing
+        actor = Actor(
+            name=self.new_actor['name'],
+            age=self.new_actor['age'],
+            gender=self.new_actor['gender'],
+            description=self.new_actor['description'])
+        actor.insert()
+
+        self.new_actor['description'] = 'patch ' + self.new_actor['description']
+
+        response = self.client().patch(
+            '/actors/{}'.format(actor.id),
+            json=self.new_actor,
+            headers={'Authorization': "Bearer {}".format(self.token_CD)}
+        )
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(data['success'], True)
@@ -123,9 +180,17 @@ class AppTestCase(unittest.TestCase):
 
         actor.delete()
 
-    '''/movies test cases'''
+    # /movies test cases
     def test_post_movies(self):
         response = self.client().post('/movies', json=self.new_movie)
+        self.assertEqual(response.status_code, 401)
+
+    def test_post_movies_with_token(self):
+        response = self.client().post(
+            '/movies',
+            json=self.new_movie,
+            headers={'Authorization': "Bearer {}".format(self.token_EP)}
+        )
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(data['success'], True)
@@ -137,12 +202,19 @@ class AppTestCase(unittest.TestCase):
 
     def test_get_movies(self):
         response = self.client().get('/movies')
+        self.assertEqual(response.status_code, 401)
+
+    def test_get_movies_with_token(self):
+        response = self.client().get(
+            '/movies',
+            headers={'Authorization': "Bearer {}".format(self.token_CA)}
+        )
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(data['success'], True)
 
     def test_get_movies_by_id(self):
-        # Created an movie for testing test_get_movies_by_id()
+        # Created an movie for testing
         movie = Movie(
             title=self.new_movie['title'],
             released_date=self.new_movie['released_date'],
@@ -151,6 +223,23 @@ class AppTestCase(unittest.TestCase):
         movie.insert()
 
         response = self.client().get('/movies/{}'.format(movie.id))
+        self.assertEqual(response.status_code, 401)
+
+        movie.delete()
+
+    def test_get_movies_by_id_with_token(self):
+        # Created an movie for testing
+        movie = Movie(
+            title=self.new_movie['title'],
+            released_date=self.new_movie['released_date'],
+            genre=self.new_movie['genre'],
+            description=self.new_movie['description'])
+        movie.insert()
+
+        response = self.client().get(
+            '/movies/{}'.format(movie.id),
+            headers={'Authorization': "Bearer {}".format(self.token_CA)}
+        )
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(data['success'], True)
@@ -159,7 +248,7 @@ class AppTestCase(unittest.TestCase):
         movie.delete()
 
     def test_delete_movies_by_id(self):
-        # Created a movie for testing test_delete_actors_by_id()
+        # Created a movie for testing
         movie = Movie(
             title=self.new_movie['title'],
             released_date=self.new_movie['released_date'],
@@ -168,13 +257,30 @@ class AppTestCase(unittest.TestCase):
         movie.insert()
 
         response = self.client().delete('/movies/{}'.format(movie.id))
+        self.assertEqual(response.status_code, 401)
+
+        movie.delete()
+
+    def test_delete_movies_by_id_with_token(self):
+        # Created a movie for testing
+        movie = Movie(
+            title=self.new_movie['title'],
+            released_date=self.new_movie['released_date'],
+            genre=self.new_movie['genre'],
+            description=self.new_movie['description'])
+        movie.insert()
+
+        response = self.client().delete(
+            '/movies/{}'.format(movie.id),
+            headers={'Authorization': "Bearer {}".format(self.token_EP)}
+        )
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['movie_id'], movie.id)
 
     def test_patch_movies_by_id(self):
-        # Created a movie for testing test_patch_movies_by_id()
+        # Created a movie for testing
         movie = Movie(
             title=self.new_movie['title'],
             released_date=self.new_movie['released_date'],
@@ -185,6 +291,26 @@ class AppTestCase(unittest.TestCase):
         self.new_movie['description'] = 'patch ' + self.new_movie['description']
 
         response = self.client().patch('/movies/{}'.format(movie.id), json=self.new_movie)
+        self.assertEqual(response.status_code, 401)
+
+        movie.delete()
+
+    def test_patch_movies_by_id_with_token(self):
+        # Created a movie for testing
+        movie = Movie(
+            title=self.new_movie['title'],
+            released_date=self.new_movie['released_date'],
+            genre=self.new_movie['genre'],
+            description=self.new_movie['description'])
+        movie.insert()
+
+        self.new_movie['description'] = 'patch ' + self.new_movie['description']
+
+        response = self.client().patch(
+            '/movies/{}'.format(movie.id),
+            json=self.new_movie,
+            headers={'Authorization': "Bearer {}".format(self.token_CD)}
+        )
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(data['success'], True)

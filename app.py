@@ -33,7 +33,7 @@ def create_app(test_config=None):
     # GET /coolkids
     # Used as a debugging purpose to print jwt, to check right permission are assigned from auth0.com
     @app.route('/coolkids')
-    @requires_auth('')
+    @requires_auth('get:actors')
     def be_cool(payload, *args, **kwargs):
         return 'Be cool, man, be coooool! You\'re almost a FSND grad! ' + str(payload)
 
