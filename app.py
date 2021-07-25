@@ -4,6 +4,7 @@ from flask_cors import CORS
 from models import setup_db, Actor, Movie
 from auth import AuthError, requires_auth
 
+
 def create_app(test_config=None):
     app = Flask(__name__)
     setup_db(app)
@@ -11,7 +12,10 @@ def create_app(test_config=None):
 
     @app.after_request
     def after_request(response):
-        response.headers.add('Access-Control-Allow-Methods', 'GET,POST,DELETE,PATCH')
+        response.headers.add(
+            'Access-Control-Allow-Methods',
+            'GET,POST,DELETE,PATCH'
+        )
         return response
 
     def check(dt):
@@ -31,11 +35,12 @@ def create_app(test_config=None):
         return greeting
 
     # GET /coolkids
-    # Used as a debugging purpose to print jwt, to check right permission are assigned from auth0.com
+    # Used as a debugging purpose to print jwt,
+    # to check right permission are assigned from auth0.com
     @app.route('/coolkids')
     @requires_auth('get:actors')
     def be_cool(payload, *args, **kwargs):
-        return 'Be cool, man, be coooool! You\'re almost a FSND grad! ' + str(payload)
+        return 'Be cool, payload: ' + str(payload)
 
     @app.route('/actors', methods=['GET'])
     @requires_auth('get:actors')
@@ -141,9 +146,9 @@ def create_app(test_config=None):
         description = post_json.get('description')
 
         if ((name is None)
-            or (age is None)
-            or (gender is None)
-            or (description is None)):
+                or (age is None)
+                or (gender is None)
+                or (description is None)):
             abort(422)
 
         try:
@@ -170,9 +175,9 @@ def create_app(test_config=None):
         description = post_json.get('description')
 
         if ((title is None)
-            or (released_date is None)
-            or (genre is None)
-            or (description is None)):
+                or (released_date is None)
+                or (genre is None)
+                or (description is None)):
             abort(422)
 
         try:
@@ -283,6 +288,7 @@ def create_app(test_config=None):
         })
 
     return app
+
 
 application = create_app()
 

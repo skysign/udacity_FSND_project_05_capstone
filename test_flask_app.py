@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from app import create_app
 from models import setup_db, Actor, Movie
 
+
 class AppTestCase(unittest.TestCase):
     """This class represents the app test case"""
 
@@ -27,17 +28,19 @@ class AppTestCase(unittest.TestCase):
             # create all tables
             self.db.create_all()
 
-        self.new_actor = { 'name': 'actor_json_name',
-                           'age': 1,
-                           'gender': 'female',
-                           'description': 'actor_json_name age1 gender female'
-                         }
+        self.new_actor = {
+            'name': 'actor_json_name',
+            'age': 1,
+            'gender': 'female',
+            'description': 'actor_json_name age1 gender female'
+        }
 
-        self.new_movie = { 'title': 'movie_title',
-                           'released_date': '2021-07-23',
-                           'genre': 'SF',
-                           'description': 'movie_title 2021-07-23 SF'
-                         }
+        self.new_movie = {
+            'title': 'movie_title',
+            'released_date': '2021-07-23',
+            'genre': 'SF',
+            'description': 'movie_title 2021-07-23 SF'
+        }
 
     def tearDown(self):
         """Executed after reach test"""
@@ -52,8 +55,10 @@ class AppTestCase(unittest.TestCase):
         response = self.client().post(
             '/actors',
             json=self.new_actor,
-            headers={'Authorization': "Bearer {}".format(self.token_CD)
-        })
+            headers={
+                'Authorization': "Bearer {}".format(self.token_CD)
+            }
+        )
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(data['success'], True)
@@ -150,9 +155,12 @@ class AppTestCase(unittest.TestCase):
             description=self.new_actor['description'])
         actor.insert()
 
-        self.new_actor['description'] = 'patch ' + self.new_actor['description']
+        self.new_actor['description'] = 'patch '+self.new_actor['description']
 
-        response = self.client().patch('/actors/{}'.format(actor.id), json=self.new_actor)
+        response = self.client().patch(
+            '/actors/{}'.format(actor.id),
+            json=self.new_actor
+        )
         self.assertEqual(response.status_code, 401)
 
         actor.delete()
@@ -166,7 +174,7 @@ class AppTestCase(unittest.TestCase):
             description=self.new_actor['description'])
         actor.insert()
 
-        self.new_actor['description'] = 'patch ' + self.new_actor['description']
+        self.new_actor['description'] = 'patch '+self.new_actor['description']
 
         response = self.client().patch(
             '/actors/{}'.format(actor.id),
@@ -288,9 +296,12 @@ class AppTestCase(unittest.TestCase):
             description=self.new_movie['description'])
         movie.insert()
 
-        self.new_movie['description'] = 'patch ' + self.new_movie['description']
+        self.new_movie['description'] = 'patch '+self.new_movie['description']
 
-        response = self.client().patch('/movies/{}'.format(movie.id), json=self.new_movie)
+        response = self.client().patch(
+            '/movies/{}'.format(movie.id),
+            json=self.new_movie
+        )
         self.assertEqual(response.status_code, 401)
 
         movie.delete()
@@ -304,7 +315,7 @@ class AppTestCase(unittest.TestCase):
             description=self.new_movie['description'])
         movie.insert()
 
-        self.new_movie['description'] = 'patch ' + self.new_movie['description']
+        self.new_movie['description'] = 'patch '+self.new_movie['description']
 
         response = self.client().patch(
             '/movies/{}'.format(movie.id),
@@ -317,6 +328,7 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(data['movie_id'], movie.id)
 
         movie.delete()
+
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
