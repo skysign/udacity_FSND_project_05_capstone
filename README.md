@@ -1,12 +1,11 @@
-# Udacity FSND Project 05 Capstone
-* Project 05 capstone in Udacity Full Stack Web Developer Nanodegree (nd0044 v2)
-* Author: skysign@gmail.com
-
-# Motivation for Project
+# Motivation of Project
 This is the last project of Udacity Full Stack Web Developer Nanodegree (nd0044 v2),
 to implement a set of specified endpoints by using flask.
-auth0.com will be used for authentication and authorization.
-And project will be hosted in heroku to demonstrate RESTfull API.
+auth0.com will be used for authentication and authorization, also.
+And project will be hosted in heroku to demonstrate RESTfull APIs.
+
+* Project 05 capstone in Udacity Full Stack Web Developer Nanodegree (nd0044 v2)
+* Author: skysign@gmail.com
 
 # Getting Started
 * Recommended to use virtualenv to avoid any conflict in other existed flask app.
@@ -16,6 +15,12 @@ pip install -r requirements.txt
 ```
 * Please visit below to see running RESTfull APIs
   * https://udacity-fsnd-project-05.herokuapp.com/
+
+* To verify RESTfull APIs locally, please run like below
+  * Before running below, please set DATABASE_URL correctly.
+```
+python test_flask_app.py
+```
 
 # Specifications
 ## General Specifications
