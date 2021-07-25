@@ -2,9 +2,20 @@
 * Project 05 capstone in Udacity Full Stack Web Developer Nanodegree (nd0044 v2)
 * Author: skysign@gmail.com
 
-# URL and Authentication
-* https://udacity-fsnd-project-05.herokuapp.com/
-* Authentication
+# Motivation for Project
+This is the last project of Udacity Full Stack Web Developer Nanodegree (nd0044 v2),
+to implement a set of specified endpoints by using flask.
+auth0.com will be used for authentication and authorization.
+And project will be hosted in heroku to demonstrate RESTfull API.
+
+# Getting Started
+* Recommended to use virtualenv to avoid any conflict in other existed flask app.
+* Please use the command below to install dependent libs at once
+```
+pip install -r requirements.txt
+```
+* Please visit below to see running RESTfull APIs
+  * https://udacity-fsnd-project-05.herokuapp.com/
 
 # Specifications
 ## General Specifications
@@ -30,11 +41,7 @@ The Casting Agency models a company that is responsible for creating movies and 
 * Models:
   * Movies with attributes title and release date
   * Actors with attributes name, age and gender
-* Endpoints:
-  * GET /actors and /movies
-  * DELETE /actors/ and /movies/
-  * POST /actors and /movies and
-  * PATCH /actors/ and /movies/
+
 * Roles:
   * Casting Assistant
     * Can view actors and movies
@@ -49,3 +56,42 @@ The Casting Agency models a company that is responsible for creating movies and 
   * One test for success behavior of each endpoint
   * One test for error behavior of each endpoint
   * At least two tests of RBAC for each role
+
+# Endpoints
+The endpoints below are provided.
+  * GET /actors and /movies
+  * DELETE /actors/ and /movies/
+  * POST /actors and /movies
+  * PATCH /actors/ and /movies/
+
+ Please see below for more details.
+
+## POST /actors
+* Add new actor
+
+## GET /actors
+* Return a list of actors
+
+## GET /actors/<int:id>
+* Return a actor, pointed by id
+
+## DELETE /actors/<int:id>
+* Delete a actor, pointed by id
+
+## PATCH /actors/<int:id>
+* Update a actor, pointed by id
+
+## POST /movies
+* Add new movie
+
+## GET /movies
+* Return a list of movies
+
+## GET /movies/<int:id>
+* Return a movie, pointed by id
+
+## DELETE /movies/<int:id>
+* Delete a movie, pointed by id
+
+## PATCH /movies/<int:id>
+* Update a movie, pointed by id
