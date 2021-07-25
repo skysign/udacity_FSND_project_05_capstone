@@ -4,9 +4,9 @@ from functools import wraps
 from jose import jwt
 from urllib.request import urlopen
 
-AUTH0_DOMAIN = 'udacity-fsnd-project-05.us.auth0.com'
-ALGORITHMS = ['RS256']
-API_AUDIENCE = 'project05'
+AUTH0_DOMAIN = os.getenv('AUTH0_DOMAIN', default=None)
+ALGORITHMS = os.getenv('ALGORITHMS', default=None)
+API_AUDIENCE = os.getenv('API_AUDIENCE', default=None)
 
 ## AuthError Exception
 '''
